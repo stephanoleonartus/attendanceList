@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { verifyToken } from '../utils/authHelper';
+import { verifyToken } from '../utils/authHelpers';
 
 export const AuthContext = createContext();
 
