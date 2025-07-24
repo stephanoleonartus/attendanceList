@@ -1,4 +1,4 @@
-import Register from "./components/auth/AuthContext";
+import Register from "./components/auth/Register";
 // import './App.css';
 
 function App() {
