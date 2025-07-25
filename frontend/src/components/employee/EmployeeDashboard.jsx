@@ -1,21 +1,29 @@
 import React from 'react';
-import { useAuth } from '../auth/AuthContext';
+import './EmployeeDashboard.css';
 
 const EmployeeDashboard = () => {
-  const { user } = useAuth();
-
   return (
-    <div className="dashboard">
-      <h1>Employee Dashboard</h1>
-      <p>Welcome, {user?.name}</p>
-      <div className="quick-stats">
-        <div className="stat-card">
-          <h3>Today's Status</h3>
-          <p>Not Checked In</p>
+    <div className="employee-dashboard">
+      <div className="sidebar">
+        {/* Profile will go here */}
+      </div>
+      <div className="main-content">
+        <div className="header">
+          {/* Notification bell will go here */}
         </div>
-        <div className="stat-card">
-          <h3>This Month</h3>
-          <p>20/22 Days Present</p>
+        <div className="content">
+          <div className="left-column">
+            <div className="time-box">
+              {/* Time counter will go here */}
+            </div>
+            <div className="location-box">
+              {/* Location identifier will go here */}
+            </div>
+          </div>
+          <div className="actions-box">
+            <button>Check In</button>
+            <button>Check Out</button>
+          </div>
         </div>
       </div>
     </div>
