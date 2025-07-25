@@ -54,7 +54,9 @@ const AppRoutes = () => {
           <RoleBasedLayout allowedRoles={['employee']}>
             <Routes>
               <Route path="dashboard" element={<EmployeeDashboard />} />
-              {/* Add other employee routes here */}
+              <Route path="attendance" element={<SignAttendance />} />
+              <Route path="history" element={<AttendanceHistory />} />
+              <Route path="profile" element={<Profile />} />
             </Routes>
           </RoleBasedLayout>
         }
