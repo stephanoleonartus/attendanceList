@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { NavLink } from 'react-router-dom';
 
-const SideBar = () => {
+const Sidebar = () => {
   const { user } = useAuth();
 
   const adminLinks = [
@@ -53,4 +53,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default Sidebar;

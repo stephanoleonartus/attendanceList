@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
-import SideBar from './SideBar';
+import Sidebar from './Sidebar';
 import Header from './Header';
 import Spinner from './Spinner';
 
@@ -20,7 +20,7 @@ const RoleBasedLayout = ({ allowedRoles }) => {
     <div className="app-layout">
       <Header />
       <div className="main-content">
-        <SideBar />
+        <Sidebar />
         <div className="content-area">
           <Outlet />
         </div>
