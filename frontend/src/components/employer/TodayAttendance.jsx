@@ -7,14 +7,19 @@ const TodayAttendance = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    // TODO: Fetch today's attendance from API
-    const mockData = [
-      { id: 1, name: 'John Doe', checkIn: '08:55', checkOut: '17:05', status: 'Present' },
-      { id: 2, name: 'Jane Smith', checkIn: '09:15', checkOut: '-', status: 'Late' },
-      { id: 3, name: 'Bob Johnson', checkIn: '-', checkOut: '-', status: 'Absent' },
-    ];
-    setAttendance(mockData);
-    setLoading(false);
+    const fetchAttendance = async () => {
+      try {
+        const response = await fetch('/api/attendance/today/');
+        const data = await response.json();
+        setAttendance(data);
+      } catch (error) {
+        console.error('Error fetching attendance:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttendance();
   }, []);
 
   if (loading) return <p>Loading attendance data...</p>;

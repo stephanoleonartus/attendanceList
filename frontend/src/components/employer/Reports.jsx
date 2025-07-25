@@ -10,14 +10,21 @@ const Report = () => {
   const [reportData, setReportData] = useState([]);
   const { user } = useAuth();
 
-  const generateReport = () => {
-    // TODO: Generate report from API
-    const mockData = [
-      { date: '2023-05-01', present: 12, late: 2, absent: 1 },
-      { date: '2023-05-02', present: 11, late: 3, absent: 1 },
-      { date: '2023-05-03', present: 14, late: 0, absent: 1 },
-    ];
-    setReportData(mockData);
+  const generateReport = async () => {
+    let url = '/api/reports/';
+    if (reportType === 'daily') {
+      url += `?type=daily&start_date=${dateRange.start}`;
+    } else if (reportType === 'custom') {
+      url += `?type=custom&start_date=${dateRange.start}&end_date=${dateRange.end}`;
+    }
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setReportData(data);
+    } catch (error) {
+      console.error('Error generating report:', error);
+    }
   };
 
   return (
