@@ -280,3 +280,15 @@ body {
       flex-direction: column;
     }
   }
+
+.today-attendance {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.today-attendance h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
