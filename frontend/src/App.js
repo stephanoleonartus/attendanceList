@@ -8,6 +8,9 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import EmployerDashboard from './components/employer/EmployerDashboard';
 import Spinner from './components/pages/Spinner';
+import SignAttendance from './components/employee/SignAttendance';
+import AttendanceHistory from './components/employee/AttendanceHistory';
+import Profile from './components/employee/Profile';
 
 const AppRoutes = () => {
   const { user, loading } = useAuth();
