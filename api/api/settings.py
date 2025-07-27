@@ -38,12 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'attendance',
-    'authentication',
-    'location',
-    'reports',
-    'users',
-    'workhours',
+    'attendance.apps.AttendanceConfig',
+    'authentication.apps.AuthenticationConfig',
+    'location.apps.LocationConfig',
+    'reports.apps.ReportsConfig',
+    'users.apps.UsersConfig',
+    'workhours.apps.WorkhoursConfig',
+    'leave.apps.LeaveConfig',
+    'administration.apps.AdministrationConfig',
 ]
 
 MIDDLEWARE = [
