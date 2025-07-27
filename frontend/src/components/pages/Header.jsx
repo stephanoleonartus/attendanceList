@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ProfileComponent from '../employee/ProfileComponent';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -19,7 +20,7 @@ const Header = () => {
       <div className="header-right">
         {user && (
           <>
-            <span className="user-info">Welcome, {user.name}</span>
+            <ProfileComponent user={user} />
             <button onClick={handleLogout} className="logout-button">
               Logout
             </button>
