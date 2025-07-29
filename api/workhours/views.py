@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import Shift
+from .serializers import ShiftSerializer
+from rest_framework.permissions import IsAdminUser
 
-# Create your views here.
+class ShiftViewSet(viewsets.ModelViewSet):
+    queryset = Shift.objects.all()
+    serializer_class = ShiftSerializer
+    permission_classes = [IsAdminUser]

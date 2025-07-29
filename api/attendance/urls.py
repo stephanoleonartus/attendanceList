@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import TodayAttendanceView
+from .views import CheckInView, CheckOutView, AttendanceHistoryView
 
 urlpatterns = [
-    path('today/', TodayAttendanceView.as_view(), name='today-attendance'),
+    path('check-in/', CheckInView.as_view(), name='check_in'),
+    path('check-out/', CheckOutView.as_view(), name='check_out'),
+    path('history/', AttendanceHistoryView.as_view(), name='attendance_history'),
 ]

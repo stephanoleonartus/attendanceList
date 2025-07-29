@@ -5,11 +5,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .serializers import UserSerializer
 
+from users.models import Employee
+
 class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            Employee.objects.create(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
