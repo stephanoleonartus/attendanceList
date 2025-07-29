@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Header from './Header';
-import WorkHoursCard from '../components/WorkHoursCard';
+import WorkHoursCard from './WorkHoursCard';
 import AttendanceCard from './AttendanceCard';
+import JobLocationCard from './JobLocationCard';
 
 export default function Home() {
   const [checkInTime, setCheckInTime] = useState(null);
@@ -32,6 +33,7 @@ export default function Home() {
               onCheckIn={setCheckInTime}
               onCheckOut={setCheckOutTime}
             />
+            <JobLocationCard />
           </div>
         </div>
       </div>
