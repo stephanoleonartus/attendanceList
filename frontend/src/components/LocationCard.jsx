@@ -7,38 +7,56 @@ export default function LocationCard({ userLocation, allowedLocation }) {
   const [locationError, setLocationError] = useState('');
 
   useEffect(() => {
-    // Get current location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          };
-          setCurrentLocation(location);
-
-          // Verify location against allowed location
-          if (allowedLocation) {
-            const distance = calculateDistance(
-              location.latitude,
-              location.longitude,
-              allowedLocation.latitude,
-              allowedLocation.longitude
-            );
-
-            // Allow 100 meters tolerance
-            setLocationVerified(distance <= 0.1);
+    const fetchAllowedLocation = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/location/locations/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           }
-        },
-        (error) => {
-          setLocationError('Unable to get location. Please enable GPS.');
-          console.error('Location error:', error);
+        });
+        const locationData = await response.json();
+        if (locationData.length > 0) {
+          // Assuming the first location is the allowed location
+          const allowed = locationData[0];
+
+          // Get current location
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const currentLocation = {
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude
+                };
+                setCurrentLocation(currentLocation);
+
+                const distance = calculateDistance(
+                  currentLocation.latitude,
+                  currentLocation.longitude,
+                  allowed.latitude,
+                  allowed.longitude
+                );
+
+                // Allow radius tolerance from API
+                setLocationVerified(distance <= allowed.radius);
+              },
+              (error) => {
+                setLocationError('Unable to get location. Please enable GPS.');
+                console.error('Location error:', error);
+              }
+            );
+          } else {
+            setLocationError('Geolocation is not supported by this browser.');
+          }
         }
-      );
-    } else {
-      setLocationError('Geolocation is not supported by this browser.');
-    }
-  }, [allowedLocation]);
+      } catch (error) {
+        console.error('Failed to fetch allowed location:', error);
+      }
+    };
+
+    fetchAllowedLocation();
+  }, []);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the Earth in kilometers

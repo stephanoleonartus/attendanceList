@@ -85,14 +85,14 @@ export default function Home() {
       <div className="main-content">
         <div className="content-area">
           <div className="dashboard-welcome">
-            <h2>Welcome back, {user.name}! 👋</h2>
+            <h2>Welcome back, {user.user.first_name} {user.user.last_name}! 👋</h2>
             <p>{getCurrentDate()}</p>
             <div className="user-meta">
               <span className="meta-item">
                 <strong>Department:</strong> {user.department}
               </span>
               <span className="meta-item">
-                <strong>ID:</strong> {user.employeeId}
+                <strong>ID:</strong> {user.id}
               </span>
               <span className="meta-item">
                 <strong>Role:</strong>

@@ -39,12 +39,24 @@ export default function NotificationBell() {
     console.log('View all notifications');
   };
 
-  // TODO: Integrate with Django backend for real-time notifications
   useEffect(() => {
-    // Fetch notifications from Django API
-    // fetch('/api/notifications/')
-    //   .then(response => response.json())
-    //   .then(data => setNotifications(data));
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/administration/notifications/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        const notificationData = await response.json();
+        setNotifications(notificationData);
+      } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+      }
+    };
+
+    fetchNotifications();
   }, []);
 
   return (
