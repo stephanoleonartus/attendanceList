@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-export default function ProfileComponent({ user }) {
+// Profile Component
+export default function ProfileComponent({ user, onLogout }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -9,25 +10,24 @@ export default function ProfileComponent({ user }) {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    // Add logout logic here
+    // TODO: Integrate with Django backend
+    // await fetch('/api/auth/logout/', { method: 'POST' });
+    onLogout();
     console.log('Logging out...');
   };
 
   const handleProfileClick = (e) => {
     e.preventDefault();
-    // Add profile navigation logic here
     console.log('Navigate to profile');
   };
 
   const handleSettingsClick = (e) => {
     e.preventDefault();
-    // Add settings navigation logic here
     console.log('Navigate to settings');
   };
 
   const handleReportsClick = (e) => {
     e.preventDefault();
-    // Add reports navigation logic here
     console.log('Navigate to reports');
   };
 
@@ -37,14 +37,19 @@ export default function ProfileComponent({ user }) {
         <div className="profile-trigger" onClick={toggleDropdown}>
           <div className="profile-avatar">
             <img 
-              src="https://via.placeholder.com/40x40/3498db/ffffff?text=U" 
+              src={user?.avatar || "https://via.placeholder.com/40x40/3498db/ffffff?text=U"}
               alt="Profile" 
               className="avatar-image"
             />
           </div>
           <div className="profile-info">
-            <span className="profile-name">{user?.name || 'John Doe'}</span>
-            <span className="profile-role">{user?.role || 'Employee'}</span>
+            <span className="profile-name">{user?.name || 'User'}</span>
+            <span className="profile-role">
+              {user?.role || 'Employee'}
+              <span className={`role-badge ${user?.role?.toLowerCase() || 'employee'}`}>
+                {user?.role || 'EMP'}
+              </span>
+            </span>
           </div>
           <div className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>
             ▼

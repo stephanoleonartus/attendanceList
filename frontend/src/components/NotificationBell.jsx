@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+// Notification Bell Component
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications] = useState([
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       title: 'Check-in Reminder',
@@ -34,9 +35,17 @@ export default function NotificationBell() {
 
   const handleViewAll = (e) => {
     e.preventDefault();
-    // Add navigation logic here
+    // TODO: Navigate to notifications page
     console.log('View all notifications');
   };
+
+  // TODO: Integrate with Django backend for real-time notifications
+  useEffect(() => {
+    // Fetch notifications from Django API
+    // fetch('/api/notifications/')
+    //   .then(response => response.json())
+    //   .then(data => setNotifications(data));
+  }, []);
 
   return (
     <div className="notification-container">
