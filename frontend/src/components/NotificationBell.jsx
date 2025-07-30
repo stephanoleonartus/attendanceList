@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+// Notification Bell Component
 export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications] = useState([
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       title: 'Check-in Reminder',
@@ -34,9 +35,29 @@ export default function NotificationBell() {
 
   const handleViewAll = (e) => {
     e.preventDefault();
-    // Add navigation logic here
+    // TODO: Navigate to notifications page
     console.log('View all notifications');
   };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/administration/notifications/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        const notificationData = await response.json();
+        setNotifications(notificationData);
+      } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   return (
     <div className="notification-container">
