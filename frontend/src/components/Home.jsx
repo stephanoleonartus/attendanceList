@@ -15,58 +15,25 @@ export default function Home() {
 
   // Initialize app and load user data
   useEffect(() => {
-    // TODO: Check authentication status
-    // const token = localStorage.getItem('authToken');
-    // if (token) {
-    //   fetchUserData();
-    // }
-
-    // Mock user data for demonstration
-    const mockUser = {
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@company.com',
-      role: 'Employee', // HR, Department, Employee
-      avatar: 'https://via.placeholder.com/40x40/3498db/ffffff?text=JD',
-      department: 'Engineering',
-      employeeId: 'EMP001'
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/users/employees/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        const userData = await response.json();
+        setUser(userData[0]); // Assuming the first user is the logged in user
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
     };
 
-    // Mock allowed location (would come from Django admin)
-    const mockLocation = {
-      name: 'TechCorp Headquarters',
-      address: '123 Innovation Drive, Tech City, TC 12345',
-      latitude: -6.7924,
-      longitude: 39.2083
-    };
-
-    setUser(mockUser);
-    setAllowedLocation(mockLocation);
-    setIsAuthenticated(true);
+    fetchUserData();
   }, []);
-
-  // Fetch user data from Django backend
-  const fetchUserData = async () => {
-    try {
-      // TODO: Replace with actual Django API endpoint
-      // const response = await fetch('/api/user/profile/', {
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-      //     'Content-Type': 'application/json',
-      //   }
-      // });
-      // const userData = await response.json();
-      // setUser(userData);
-
-      // Also fetch allowed locations for this user
-      // const locationsResponse = await fetch('/api/user/allowed-locations/');
-      // const locationsData = await locationsResponse.json();
-      // setAllowedLocation(locationsData[0]); // Assuming first location is primary
-
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
-    }
-  };
 
   const handleLogout = () => {
     // TODO: Call Django logout endpoint

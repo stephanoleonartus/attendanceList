@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Profile Component
-export default function ProfileComponent({ user, onLogout }) {
+export default function ProfileComponent({ user }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -10,10 +12,8 @@ export default function ProfileComponent({ user, onLogout }) {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    // TODO: Integrate with Django backend
-    // await fetch('/api/auth/logout/', { method: 'POST' });
-    onLogout();
-    console.log('Logging out...');
+    localStorage.removeItem('authToken');
+    navigate('/login');
   };
 
   const handleProfileClick = (e) => {

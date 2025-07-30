@@ -30,40 +30,35 @@ export default function AttendanceCard({ onCheckIn, onCheckOut, locationVerified
     setIsLoading(true);
 
     try {
-      // TODO: Integrate with Django backend
-      const attendanceData = {
-        action: value,
-        timestamp: new Date().toISOString(),
-        location: null,
-        // Add CSRF token for Django
-        // csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]')?.value
-      };
+      const token = localStorage.getItem('authToken');
+      const endpoint = value === 'check-in' ? '/api/attendance/check-in/' : '/api/attendance/check-out/';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          timestamp: new Date().toISOString(),
+        }),
+      });
 
-      // Example Django API call
-      // const response = await fetch('/api/attendance/', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'X-CSRFToken': getCsrfToken(),
-      //   },
-      //   body: JSON.stringify(attendanceData)
-      // });
-
-      // Simulate API call delay
-      setTimeout(() => {
+      if (response.ok) {
         if (value === 'check-in') {
           onCheckIn(new Date());
         }
         if (value === 'check-out') {
           onCheckOut(new Date());
         }
-        setIsLoading(false);
-      }, 1000);
-
+      } else {
+        const errorData = await response.json();
+        alert(errorData.detail || 'Failed to record attendance.');
+      }
     } catch (error) {
       console.error('Attendance error:', error);
-      setIsLoading(false);
       alert('Failed to record attendance. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
