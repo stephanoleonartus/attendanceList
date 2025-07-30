@@ -14,6 +14,7 @@ class DesignationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
 class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     permission_classes = [IsAuthenticated]
 
