@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { Container, Paper, TextField, Button, Typography, Box } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Container, Paper, TextField, Button, Typography, Box, Link } from '@mui/material';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -58,6 +58,9 @@ const LoginPage = () => {
           >
             Sign In
           </Button>
+          <Link component={RouterLink} to="/signup" variant="body2">
+            {"Don't have an account? Sign Up"}
+          </Link>
         </Box>
       </Paper>
     </Container>
