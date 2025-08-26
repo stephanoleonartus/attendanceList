@@ -3,16 +3,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Attendance
 from .serializers import AttendanceSerializer
-from datetime import date, datetime
+from django.utils import timezone
 from location.models import Location
 from location.utils import calculate_distance
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 class CheckInView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        today = date.today()
+        today = timezone.now().date()
         user = request.user
         latitude = request.data.get('latitude')
         longitude = request.data.get('longitude')
@@ -38,7 +38,7 @@ class CheckInView(APIView):
         if attendance.check_in:
             return Response({'error': 'You have already checked in today.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        attendance.check_in = datetime.now().time()
+        attendance.check_in = timezone.now().time()
         attendance.status = 'Present'
         attendance.latitude = latitude
         attendance.longitude = longitude
@@ -57,11 +57,19 @@ class AttendanceHistoryView(APIView):
         serializer = AttendanceSerializer(attendance, many=True)
         return Response(serializer.data)
 
+class AllAttendanceHistoryView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        attendance = Attendance.objects.all()
+        serializer = AttendanceSerializer(attendance, many=True)
+        return Response(serializer.data)
+
 class CheckOutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        today = date.today()
+        today = timezone.now().date()
         user = request.user
         photo = request.data.get('photo')
 
@@ -76,7 +84,7 @@ class CheckOutView(APIView):
         if attendance.check_out:
             return Response({'error': 'You have already checked out today.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        attendance.check_out = datetime.now().time()
+        attendance.check_out = timezone.now().time()
         attendance.check_out_photo = photo
         attendance.save()
 

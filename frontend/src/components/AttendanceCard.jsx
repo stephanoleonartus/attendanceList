@@ -1,24 +1,43 @@
 import React, { useState } from 'react';
+import api from '../services/api';
 
-export default function AttendanceCard({ onCheckIn, onCheckOut }) {
+export default function AttendanceCard() {
   const [status, setStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleCheck = async (e) => {
     const value = e.target.value;
     setStatus(value);
     setIsLoading(true);
+    setMessage('');
 
-    // Simulate API call delay
-    setTimeout(() => {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+
+      const formData = new FormData();
+      formData.append('latitude', position.coords.latitude);
+      formData.append('longitude', position.coords.longitude);
+      // Photo is required by the backend, but we are not implementing it in this version.
+      // We will send a dummy file.
+      formData.append('photo', new Blob(['']), 'dummy.jpg');
+
+
       if (value === 'check-in') {
-        onCheckIn(new Date());
+        await api.post('/attendance/check-in/', formData);
+        setMessage('✅ Successfully checked in!');
       }
       if (value === 'check-out') {
-        onCheckOut(new Date());
+        await api.post('/attendance/check-out/', formData);
+        setMessage('🏁 Successfully checked out!');
       }
+    } catch (error) {
+      setMessage(`Error: ${error.response?.data?.error || error.message}`);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const getCurrentTime = () => {
@@ -75,12 +94,9 @@ export default function AttendanceCard({ onCheckIn, onCheckOut }) {
         </div>
       )}
 
-      {status && !isLoading && (
-        <div className={`status-message ${status === 'check-in' ? 'success' : 'info'}`}>
-          {status === 'check-in' ? 
-            '✅ Successfully checked in!' : 
-            '🏁 Successfully checked out!'
-          }
+      {message && !isLoading && (
+        <div className={`status-message ${message.includes('Error') ? 'error' : 'success'}`}>
+          {message}
         </div>
       )}
     </div>

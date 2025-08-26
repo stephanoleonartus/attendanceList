@@ -1,2 +1,5 @@
 Django>=3.2,<4.0
 djangorestframework>=3.12,<3.13
+django-cors-headers==3.13.0
+reportlab
+openpyxl
