@@ -7,9 +7,21 @@ export default function AttendanceCard() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [todaysAttendance, setTodaysAttendance] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const fetchTodaysAttendance = async () => {
+      try {
+        const response = await api.get('/attendance/history/');
+        const today = new Date().toISOString().split('T')[0];
+        const todayData = response.data.find(att => att.date === today);
+        setTodaysAttendance(todayData);
+      } catch (error) {
+        console.error('Failed to fetch today\'s attendance', error);
+      }
+    };
+    fetchTodaysAttendance();
     return () => clearInterval(timer);
   }, []);
 
@@ -29,7 +41,8 @@ export default function AttendanceCard() {
       formData.append('photo', new Blob(['']), 'dummy.jpg');
 
       const response = await api.post(`/attendance/${type}/`, formData);
-      setMessage(`Successfully checked ${type} at ${new Date(response.data.date + 'T' + response.data.check_in).toLocaleTimeString()}`);
+      setMessage(`Successfully checked ${type} at ${new Date().toLocaleTimeString()}`);
+      setTodaysAttendance(response.data);
     } catch (err) {
       setError(err.response?.data?.error || `Failed to check ${type}.`);
     } finally {
@@ -46,12 +59,18 @@ export default function AttendanceCard() {
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
           Current Time: {currentTime.toLocaleTimeString()}
         </Typography>
+        {todaysAttendance && (
+          <Box>
+            <Typography>Check-in: {todaysAttendance.check_in}</Typography>
+            <Typography>Check-out: {todaysAttendance.check_out || 'Not yet'}</Typography>
+          </Box>
+        )}
         <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
           <Button
             variant="contained"
             color="primary"
             onClick={() => handleCheck('check-in')}
-            disabled={isLoading}
+            disabled={isLoading || todaysAttendance?.check_in}
           >
             Check In
           </Button>
@@ -59,7 +78,7 @@ export default function AttendanceCard() {
             variant="contained"
             color="secondary"
             onClick={() => handleCheck('check-out')}
-            disabled={isLoading}
+            disabled={isLoading || !todaysAttendance?.check_in || todaysAttendance?.check_out}
           >
             Check Out
           </Button>

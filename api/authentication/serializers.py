@@ -12,17 +12,17 @@ class RegisterSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
-    def save(self):
-        user = User(
-            email=self.validated_data['email'],
-            username=self.validated_data['username']
-        )
-        password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-        if password != password2:
+    def validate(self, data):
+        if data['password'] != data['password2']:
             raise serializers.ValidationError({'password': 'Passwords must match.'})
-        user.set_password(password)
-        user.save()
+        return data
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
         Employee.objects.create(user=user)
         return user
 
