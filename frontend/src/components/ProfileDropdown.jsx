@@ -35,14 +35,21 @@ const ProfileDropdown = () => {
   return (
     <div>
       <Button onClick={handleClick} color="inherit">
-        <Avatar sx={{ width: 32, height: 32, mr: 1 }}>
+        <Avatar sx={{ width: 40, height: 40, mr: 1 }}>
           {user && user.profile_picture ? (
             <img src={user.profile_picture} alt="Profile" style={{ width: '100%', height: '100%' }} />
           ) : (
             getInitials(user ? `${user.first_name} ${user.last_name}` : '')
           )}
         </Avatar>
-        {user ? `${user.first_name} ${user.last_name}` : 'Guest'}
+        <Box sx={{ textAlign: 'left' }}>
+          <Typography variant="subtitle1" component="div">
+            {user ? `${user.first_name} ${user.last_name}` : 'Guest'}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {user ? user.role : ''}
+          </Typography>
+        </Box>
       </Button>
       <Menu
         anchorEl={anchorEl}
