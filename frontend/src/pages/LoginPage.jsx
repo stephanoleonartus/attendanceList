@@ -6,16 +6,24 @@ import { Container, Paper, TextField, Button, Typography, Box, Link } from '@mui
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+    
     try {
       await login(username, password);
-      navigate('/dashboard');
+      navigate('/user/dashboard'); // Fixed navigation path
     } catch (error) {
       console.error('Failed to login', error);
+      setError('Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,6 +34,11 @@ const LoginPage = () => {
           Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          {error && (
+            <Typography color="error" sx={{ mt: 2, mb: 1 }}>
+              {error}
+            </Typography>
+          )}
           <TextField
             margin="normal"
             required
@@ -37,6 +50,7 @@ const LoginPage = () => {
             autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            disabled={loading}
           />
           <TextField
             margin="normal"
@@ -49,14 +63,16 @@ const LoginPage = () => {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
           >
-            Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </Button>
           <Link component={RouterLink} to="/signup" variant="body2">
             {"Don't have an account? Sign Up"}

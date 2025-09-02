@@ -19,8 +19,8 @@ const SignUpPage = () => {
       return;
     }
     try {
-      await api.post('/auth/register/', { username, email, password, password2 });
-      navigate('/login');
+      await api.post('auth/register/', { username, email, password, password2 });
+      navigate('auth/login');
     } catch (err) {
       setError(err.response?.data?.username?.[0] || err.response?.data?.email?.[0] || err.response?.data?.password?.[0] || 'Failed to register');
     }

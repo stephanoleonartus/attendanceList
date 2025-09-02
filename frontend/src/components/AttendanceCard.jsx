@@ -13,7 +13,7 @@ export default function AttendanceCard() {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     const fetchTodaysAttendance = async () => {
       try {
-        const response = await api.get('/attendance/history/');
+        const response = await api.get('attendance/history/');
         const today = new Date().toISOString().split('T')[0];
         const todayData = response.data.find(att => att.date === today);
         setTodaysAttendance(todayData);
@@ -40,7 +40,7 @@ export default function AttendanceCard() {
       formData.append('longitude', position.coords.longitude);
       formData.append('photo', new Blob(['']), 'dummy.jpg');
 
-      const response = await api.post(`/attendance/${type}/`, formData);
+      const response = await api.post(`attendance/${type}/`, formData);
       setMessage(`Successfully checked ${type} at ${new Date().toLocaleTimeString()}`);
       setTodaysAttendance(response.data);
     } catch (err) {

@@ -24,9 +24,14 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (username, password) => {
-    const response = await api.post('/auth/login/', { username, password });
-    setToken(response.data.token);
-    localStorage.setItem('token', response.data.token);
+    try {
+      const response = await api.post('auth/login/', { username, password });
+      setToken(response.data.token);
+      localStorage.setItem('token', response.data.token);
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error; // Re-throw so LoginPage can handle it
+    }
   };
 
   const logout = () => {

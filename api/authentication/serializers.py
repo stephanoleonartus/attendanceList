@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from users.models import Employee
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
@@ -18,20 +17,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        # Remove password2 from validated_data before creating user
+        validated_data.pop('password2', None)
+        
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
         )
-        Employee.objects.create(user=user)
+        
+        # Import Employee here to avoid circular import
+        try:
+            from users.models import Employee
+            Employee.objects.create(user=user)
+        except ImportError:
+            # If Employee model doesn't exist yet, skip this step
+            pass
+        
         return user
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'is_staff')
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ('id', 'username', 'email', 'is_staff')
 
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+class LoginResponseSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    user = UserSerializer()

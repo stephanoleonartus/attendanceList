@@ -22,7 +22,7 @@ const AttendancePage = () => {
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const endpoint = user.is_staff ? '/attendance/all-history/' : '/attendance/history/';
+        const endpoint = user.is_staff ? 'attendance/all-history/' : 'attendance/history/';
         const response = await api.get(endpoint);
         setAttendance(response.data);
       } catch (error) {
