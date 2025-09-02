@@ -1,8 +1,8 @@
 import React from 'react';
-import ProfileComponent from './ProfileComponent.jsx';
+import ProfileDropdown from './ProfileDropdown';
 import NotificationBell from './NotificationBell';
 
-export default function Header({ user }) {
+export default function Header() {
   return (
     <div className="app-header">
       <div className="header-left">
@@ -11,7 +11,7 @@ export default function Header({ user }) {
       
       <div className="header-right">
         <NotificationBell />
-        <ProfileComponent user={user} />
+        <ProfileDropdown />
       </div>
     </div>
   );
