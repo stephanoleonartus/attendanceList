@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Header from './Header';
+import Header from '../components/Header';
 import WorkHoursCard from '../components/WorkHoursCard';
-import AttendanceCard from './AttendanceCard';
+import AttendanceCard from '../components/AttendanceCard';
 
-export default function Home() {
+export default function HomePage() {
   const [checkInTime, setCheckInTime] = useState(null);
   const [checkOutTime, setCheckOutTime] = useState(null);
   

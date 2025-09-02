@@ -18,7 +18,7 @@ const LoginPage = () => {
     
     try {
       await login(username, password);
-      navigate('/user/dashboard'); // Fixed navigation path
+      navigate('/home');
     } catch (error) {
       console.error('Failed to login', error);
       setError('Login failed. Please check your credentials.');
