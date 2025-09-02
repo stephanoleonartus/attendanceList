@@ -3,12 +3,13 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { ThemeProvider } from '@mui/material/styles';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import DashboardPage from './pages/DashboardPage';
 import AttendancePage from './pages/AttendancePage';
 import UserManagementPage from './pages/UserManagementPage';
 import { useAuth } from './hooks/useAuth';
 import MainLayout from './components/layout/MainLayout';
 import theme from './theme';
+import AdminDashboard from './components/dashboard/AdminDashboard';
+import EmployeeDashboard from './components/dashboard/EmployeeDashboard';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
@@ -18,6 +19,11 @@ const ProtectedRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const { user } = useAuth();
   return user?.is_staff ? children : <Navigate to="/dashboard" />;
+};
+
+const Dashboard = () => {
+  const { user } = useAuth();
+  return user?.is_staff ? <AdminDashboard /> : <EmployeeDashboard />;
 };
 
 function App() {
@@ -31,7 +37,7 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
