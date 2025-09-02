@@ -1,12 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from users.models import Department, Employee
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    full_name = serializers.CharField(write_only=True)
+    department = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2')
+        fields = ('username', 'email', 'password', 'password2', 'full_name', 'department')
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -17,22 +20,26 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        # Remove password2 from validated_data before creating user
-        validated_data.pop('password2', None)
-        
+        full_name = validated_data.pop('full_name')
+        department_name = validated_data.pop('department')
+        validated_data.pop('password2')
+
+        # Split full_name into first_name and last_name
+        first_name, last_name = (full_name.split(' ', 1) + [None])[:2]
+
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password']
+            password=validated_data['password'],
+            first_name=first_name,
+            last_name=last_name if last_name else ''
         )
-        
-        # Import Employee here to avoid circular import
-        try:
-            from users.models import Employee
-            Employee.objects.create(user=user)
-        except ImportError:
-            # If Employee model doesn't exist yet, skip this step
-            pass
+
+        # Get or create the department
+        department, created = Department.objects.get_or_create(name=department_name)
+
+        # Create the employee profile
+        Employee.objects.create(user=user, department=department)
         
         return user
 
