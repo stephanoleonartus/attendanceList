@@ -10,11 +10,11 @@ const MainLayout = ({ children }) => {
   const { user } = useAuth();
 
   const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
     { text: 'Attendance', icon: <AccessTime />, path: '/attendance' },
   ];
 
   if (user?.is_staff) {
+    menuItems.unshift({ text: 'Dashboard', icon: <Dashboard />, path: '/user/dashboard' });
     menuItems.push({ text: 'User Management', icon: <People />, path: '/user-management' });
   }
 
