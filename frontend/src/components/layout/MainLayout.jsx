@@ -1,16 +1,23 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, CssBaseline, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
-import { Dashboard, People, AccessTime } from '@mui/icons-material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Box, CssBaseline, AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Divider } from '@mui/material';
+import { Dashboard, People, AccessTime, AccountCircle, Settings, Assessment, ExitToApp } from '@mui/icons-material';
 import { useAuth } from '../../hooks/useAuth';
 
 const drawerWidth = 240;
 
 const MainLayout = ({ children }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const menuItems = [
     { text: 'Attendance', icon: <AccessTime />, path: '/attendance' },
+    { text: 'My Report', icon: <Assessment />, path: '/my-report' },
   ];
 
   if (user?.is_staff) {
@@ -24,7 +31,7 @@ const MainLayout = ({ children }) => {
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            Attendance App
+            E-Attendance System
           </Typography>
         </Toolbar>
       </AppBar>
@@ -47,6 +54,27 @@ const MainLayout = ({ children }) => {
                 </ListItemButton>
               </ListItem>
             ))}
+          </List>
+          <Divider />
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton component={RouterLink} to="/profile">
+                <ListItemIcon><AccountCircle /></ListItemIcon>
+                <ListItemText primary="Profile" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={RouterLink} to="/settings">
+                <ListItemIcon><Settings /></ListItemIcon>
+                <ListItemText primary="Settings" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleLogout}>
+                <ListItemIcon><ExitToApp /></ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItemButton>
+            </ListItem>
           </List>
         </Box>
       </Drawer>

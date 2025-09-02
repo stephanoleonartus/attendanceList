@@ -1,5 +1,5 @@
 import React from 'react';
-import ProfileComponent from './ProfileComponent';
+import ProfileComponent from './ProfileComponent.jsx';
 import NotificationBell from './NotificationBell';
 
 export default function Header({ user }) {
