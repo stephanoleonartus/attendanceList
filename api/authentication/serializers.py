@@ -50,9 +50,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class UserSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'is_staff')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'role')
+
+    def get_role(self, obj):
+        try:
+            return obj.employee.role
+        except Employee.DoesNotExist:
+            return None
 
 class LoginResponseSerializer(serializers.Serializer):
     token = serializers.CharField()
