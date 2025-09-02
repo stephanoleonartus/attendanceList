@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import api from '../services/api';
-import { Container, Paper, TextField, Button, Typography, Box } from '@mui/material';
+import { Container, Paper, TextField, Button, Typography, Box, Link } from '@mui/material';
 
 const SignUpPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [department, setDepartment] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -19,8 +21,15 @@ const SignUpPage = () => {
       return;
     }
     try {
-      await api.post('auth/register/', { username, email, password, password2 });
-      navigate('auth/login');
+      await api.post('auth/register/', {
+        username,
+        email,
+        password,
+        password2,
+        full_name: fullName,
+        department,
+      });
+      navigate('/login');
     } catch (err) {
       setError(err.response?.data?.username?.[0] || err.response?.data?.email?.[0] || err.response?.data?.password?.[0] || 'Failed to register');
     }
@@ -37,11 +46,22 @@ const SignUpPage = () => {
             margin="normal"
             required
             fullWidth
+            id="fullName"
+            label="Full Name"
+            name="fullName"
+            autoComplete="name"
+            autoFocus
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="username"
             label="Username"
             name="username"
             autoComplete="username"
-            autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
@@ -55,6 +75,17 @@ const SignUpPage = () => {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+           <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="department"
+            label="Department"
+            name="department"
+            autoComplete="organization"
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -89,6 +120,9 @@ const SignUpPage = () => {
           >
             Sign Up
           </Button>
+          <Link component={RouterLink} to="/login" variant="body2">
+            {'Already have an account? Sign In'}
+          </Link>
         </Box>
       </Paper>
     </Container>
