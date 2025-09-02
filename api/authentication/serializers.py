@@ -6,10 +6,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     full_name = serializers.CharField(write_only=True)
     department = serializers.CharField(write_only=True)
+    role = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'full_name', 'department')
+        fields = ('username', 'email', 'password', 'password2', 'full_name', 'department', 'role')
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -22,6 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         full_name = validated_data.pop('full_name')
         department_name = validated_data.pop('department')
+        role = validated_data.pop('role')
         validated_data.pop('password2')
 
         # Split full_name into first_name and last_name
@@ -35,11 +37,15 @@ class RegisterSerializer(serializers.ModelSerializer):
             last_name=last_name if last_name else ''
         )
 
+        if role in ['Admin', 'HR']:
+            user.is_staff = True
+            user.save()
+
         # Get or create the department
         department, created = Department.objects.get_or_create(name=department_name)
 
         # Create the employee profile
-        Employee.objects.create(user=user, department=department)
+        Employee.objects.create(user=user, department=department, role=role)
         
         return user
 

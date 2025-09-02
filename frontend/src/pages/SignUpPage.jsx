@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import api from '../services/api';
-import { Container, Paper, TextField, Button, Typography, Box, Link } from '@mui/material';
+import { Container, Paper, TextField, Button, Typography, Box, Link, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const SignUpPage = () => {
   const [username, setUsername] = useState('');
@@ -10,6 +10,7 @@ const SignUpPage = () => {
   const [password2, setPassword2] = useState('');
   const [fullName, setFullName] = useState('');
   const [department, setDepartment] = useState('');
+  const [role, setRole] = useState('Employee');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -28,6 +29,7 @@ const SignUpPage = () => {
         password2,
         full_name: fullName,
         department,
+        role,
       });
       navigate('/login');
     } catch (err) {
@@ -87,6 +89,20 @@ const SignUpPage = () => {
             value={department}
             onChange={(e) => setDepartment(e.target.value)}
           />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="role-select-label">Role</InputLabel>
+            <Select
+              labelId="role-select-label"
+              id="role"
+              value={role}
+              label="Role"
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <MenuItem value="Employee">Employee</MenuItem>
+              <MenuItem value="HR">Employer</MenuItem>
+              <MenuItem value="Admin">Admin</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             margin="normal"
             required
