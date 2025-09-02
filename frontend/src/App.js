@@ -7,6 +7,9 @@ import DashboardPage from './pages/DashboardPage';
 import AttendancePage from './pages/AttendancePage';
 import UserManagementPage from './pages/UserManagementPage';
 import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
+import MyReportPage from './pages/MyReportPage';
 import { useAuth } from './hooks/useAuth';
 import MainLayout from './components/layout/MainLayout';
 import theme from './theme';
@@ -59,6 +62,30 @@ function App() {
                 <AdminRoute>
                   <UserManagementPage />
                 </AdminRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-report"
+            element={
+              <ProtectedRoute>
+                <MyReportPage />
               </ProtectedRoute>
             }
           />

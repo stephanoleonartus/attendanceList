@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import WorkHoursCard from '../components/WorkHoursCard';
+import WorkHoursCard from '../components/WorkHoursCard.jsx';
 import AttendanceCard from '../components/AttendanceCard';
 import { useAuth } from '../hooks/useAuth';
 

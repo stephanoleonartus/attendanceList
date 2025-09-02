@@ -40,7 +40,7 @@ export default function WorkHoursCard({ checkInTime, checkOutTime }) {
   return (
     <div className="card">
       <h3>🕒 Work Time Tracker</h3>
-      
+
       <div className="work-time-display">
         <div className="duration-container">
           <span className="duration-label">Total Duration</span>
@@ -70,4 +70,4 @@ export default function WorkHoursCard({ checkInTime, checkOutTime }) {
       )}
     </div>
   );
-}
+
