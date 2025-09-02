@@ -70,4 +70,4 @@ export default function WorkHoursCard({ checkInTime, checkOutTime }) {
       )}
     </div>
   );
-}
+
