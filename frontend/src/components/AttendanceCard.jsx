@@ -1,92 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import api from '../services/api';
-import { Card, CardContent, Typography, Button, Box, CircularProgress, Alert } from '@mui/material';
+import React, { useState } from 'react';
 
-export default function AttendanceCard() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+export default function AttendanceCard({ onCheckIn, onCheckOut }) {
+  const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [todaysAttendance, setTodaysAttendance] = useState(null);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    const fetchTodaysAttendance = async () => {
-      try {
-        const response = await api.get('attendance/history/');
-        const today = new Date().toISOString().split('T')[0];
-        const todayData = response.data.find(att => att.date === today);
-        setTodaysAttendance(todayData);
-      } catch (error) {
-        console.error('Failed to fetch today\'s attendance', error);
-      }
-    };
-    fetchTodaysAttendance();
+  // Update current time every second
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
-  const handleCheck = async (type) => {
-    setIsLoading(true);
-    setMessage('');
-    setError('');
+  const handleCheckIn = () => {
+    const now = new Date();
+    setIsCheckedIn(true);
+    onCheckIn(now.toISOString());
+  };
 
-    try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
+  const handleCheckOut = () => {
+    const now = new Date();
+    setIsCheckedIn(false);
+    onCheckOut(now.toISOString());
+  };
 
-      const formData = new FormData();
-      formData.append('latitude', position.coords.latitude);
-      formData.append('longitude', position.coords.longitude);
-      formData.append('photo', new Blob(['']), 'dummy.jpg');
+  const formatCurrentTime = () => {
+    return currentTime.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
 
-      const response = await api.post(`attendance/${type}/`, formData);
-      setMessage(`Successfully checked ${type} at ${new Date().toLocaleTimeString()}`);
-      setTodaysAttendance(response.data);
-    } catch (err) {
-      setError(err.response?.data?.error || `Failed to check ${type}.`);
-    } finally {
-      setIsLoading(false);
-    }
+  const formatCurrentDate = () => {
+    return currentTime.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" component="div">
-          Mark Attendance
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Current Time: {currentTime.toLocaleTimeString()}
-        </Typography>
-        {todaysAttendance && (
-          <Box>
-            <Typography>Check-in: {todaysAttendance.check_in}</Typography>
-            <Typography>Check-out: {todaysAttendance.check_out || 'Not yet'}</Typography>
-          </Box>
-        )}
-        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleCheck('check-in')}
-            disabled={isLoading || todaysAttendance?.check_in}
+    <div className="card">
+      <h3>📋 Attendance Tracker</h3>
+      
+      <div className="attendance-info">
+        <div className="current-time">
+          <div className="time-display">{formatCurrentTime()}</div>
+          <div className="date-display">{formatCurrentDate()}</div>
+        </div>
+      </div>
+
+      <div className="attendance-status">
+        <div className={`status-indicator ${isCheckedIn ? 'checked-in' : 'checked-out'}`}>
+          <span className="status-dot"></span>
+          {isCheckedIn ? 'Currently Working' : 'Not Clocked In'}
+        </div>
+      </div>
+
+      <div className="attendance-actions">
+        {!isCheckedIn ? (
+          <button 
+            className="btn-check-in"
+            onClick={handleCheckIn}
           >
+            <span className="btn-icon">🕐</span>
             Check In
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleCheck('check-out')}
-            disabled={isLoading || !todaysAttendance?.check_in || todaysAttendance?.check_out}
+          </button>
+        ) : (
+          <button 
+            className="btn-check-out"
+            onClick={handleCheckOut}
           >
+            <span className="btn-icon">🕐</span>
             Check Out
-          </Button>
-        </Box>
-        {isLoading && <CircularProgress sx={{ mt: 2 }} />}
-        {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-      </CardContent>
-    </Card>
+          </button>
+        )}
+      </div>
+
+      <div className="attendance-note">
+        <small>
+          {!isCheckedIn 
+            ? "Click 'Check In' to start your work day" 
+            : "Don't forget to check out when you're done!"
+          }
+        </small>
+      </div>
+    </div>
   );
 }
