@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from .serializers import UserSerializer, RegisterSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -45,37 +46,24 @@ class LoginView(APIView):
         
         return Response({
             'error': 'Invalid credentials'
-        }, status=status.HTTP_400_BAD_REQUEST)
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserView(APIView):
-    permission_classes = []  # Remove authentication requirement temporarily
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Manual token authentication
-        auth_header = request.META.get('HTTP_AUTHORIZATION')
-        if not auth_header or not auth_header.startswith('Token '):
-            return Response({
-                'error': 'Authentication credentials were not provided.'
-            }, status=status.HTTP_401_UNAUTHORIZED)
-        
-        token_key = auth_header.split(' ')[1]
-        
         try:
-            from rest_framework.authtoken.models import Token
-            token = Token.objects.get(key=token_key)
-            user = token.user
+            user = request.user
             serializer = UserSerializer(user)
-            return Response(serializer.data)
-        except Token.DoesNotExist:
-            return Response({
-                'error': 'Invalid token.'
-            }, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({
-                'error': 'Authentication failed.'
-            }, status=status.HTTP_401_UNAUTHORIZED)
+                'error': 'Error retrieving user data'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
     def post(self, request):

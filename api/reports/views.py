@@ -1,23 +1,50 @@
 from django.http import HttpResponse
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.response import Response
+from rest_framework import status
 from attendance.models import Attendance
 from users.models import Employee, Department
 from django.contrib.auth.models import User
 from reportlab.pdfgen import canvas
 from openpyxl import Workbook
-from datetime import date
+from datetime import date, datetime
+from authentication.permissions import IsAdmin, IsHR
 
 class IndividualAttendanceReport(APIView):
-    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request, user_id, start_date, end_date, format):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return HttpResponse("User not found", status=404)
+            return Response(
+                {"error": "User not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-        attendances = Attendance.objects.filter(user=user, date__range=[start_date, end_date])
+        try:
+            # Validate date format
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        attendances = Attendance.objects.filter(
+            user=user, 
+            date__range=[start_date_obj, end_date_obj]
+        ).order_by('date')
+
+        if not attendances.exists():
+            return Response(
+                {"error": "No attendance records found for the specified period"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         total_days = attendances.count()
         present_days = attendances.filter(status='Present').count()
@@ -47,12 +74,14 @@ class IndividualAttendanceReport(APIView):
 
             y = 640
             for attendance in attendances:
+                if y < 50:  # Start new page if needed
+                    p.showPage()
+                    y = 800
                 p.drawString(100, y, f"{attendance.date}: {attendance.status}")
                 y -= 20
 
             p.showPage()
             p.save()
-
             return response
 
         elif format == 'excel':
@@ -73,28 +102,64 @@ class IndividualAttendanceReport(APIView):
             ws.append(["Date", "Status", "Check In", "Check Out"])
 
             for attendance in attendances:
-                ws.append([attendance.date, attendance.status, attendance.check_in, attendance.check_out])
+                ws.append([
+                    attendance.date.strftime('%Y-%m-%d'), 
+                    attendance.status, 
+                    attendance.check_in.strftime('%H:%M:%S') if attendance.check_in else None, 
+                    attendance.check_out.strftime('%H:%M:%S') if attendance.check_out else None
+                ])
 
             wb.save(response)
-
             return response
 
         else:
-            return HttpResponse("Invalid format", status=400)
+            return Response(
+                {"error": "Invalid format. Use 'pdf' or 'excel'"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class DepartmentAttendanceReport(APIView):
-    permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request, department_id, start_date, end_date, format):
         try:
             department = Department.objects.get(id=department_id)
         except Department.DoesNotExist:
-            return HttpResponse("Department not found", status=404)
+            return Response(
+                {"error": "Department not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            # Validate date format
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         employees = Employee.objects.filter(department=department)
+        if not employees.exists():
+            return Response(
+                {"error": "No employees found in this department"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         users = [employee.user for employee in employees]
-        attendances = Attendance.objects.filter(user__in=users, date__range=[start_date, end_date])
+        attendances = Attendance.objects.filter(
+            user__in=users, 
+            date__range=[start_date_obj, end_date_obj]
+        ).order_by('date')
+
+        if not attendances.exists():
+            return Response(
+                {"error": "No attendance records found for the specified period"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         total_days = attendances.count()
         present_days = attendances.filter(status='Present').count()
@@ -124,12 +189,14 @@ class DepartmentAttendanceReport(APIView):
 
             y = 640
             for attendance in attendances:
+                if y < 50:  # Start new page if needed
+                    p.showPage()
+                    y = 800
                 p.drawString(100, y, f"{attendance.user.username} - {attendance.date}: {attendance.status}")
                 y -= 20
 
             p.showPage()
             p.save()
-
             return response
 
         elif format == 'excel':
@@ -150,11 +217,19 @@ class DepartmentAttendanceReport(APIView):
             ws.append(["Employee", "Date", "Status", "Check In", "Check Out"])
 
             for attendance in attendances:
-                ws.append([attendance.user.username, attendance.date, attendance.status, attendance.check_in, attendance.check_out])
+                ws.append([
+                    attendance.user.username, 
+                    attendance.date.strftime('%Y-%m-%d'), 
+                    attendance.status, 
+                    attendance.check_in.strftime('%H:%M:%S') if attendance.check_in else None, 
+                    attendance.check_out.strftime('%H:%M:%S') if attendance.check_out else None
+                ])
 
             wb.save(response)
-
             return response
 
         else:
-            return HttpResponse("Invalid format", status=400)
+            return Response(
+                {"error": "Invalid format. Use 'pdf' or 'excel'"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
