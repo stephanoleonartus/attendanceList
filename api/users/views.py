@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Department, Employee
-from .serializers import DepartmentSerializer, EmployeeSerializer
+from .models import Department, Designation, Employee
+from .serializers import DepartmentSerializer, DesignationSerializer, EmployeeSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from authentication.permissions import IsAdmin, IsHR
