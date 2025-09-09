@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Avatar, Box, Button, Divider, ListItemIcon, ListItemText, MenuItem, Menu } from '@mui/material';
+import { Avatar, Box, Button, Divider, ListItemIcon, ListItemText, MenuItem, Menu, Typography } from '@mui/material';
 import { AccountCircle, Settings, ExitToApp } from '@mui/icons-material';
 
 const ProfileDropdown = () => {
