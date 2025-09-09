@@ -99,7 +99,7 @@ const SignUpPage = () => {
               onChange={(e) => setRole(e.target.value)}
             >
               <MenuItem value="Employee">Employee</MenuItem>
-              <MenuItem value="HR">Employer</MenuItem>
+              <MenuItem value="HR">HR</MenuItem>
               <MenuItem value="Admin">Admin</MenuItem>
             </Select>
           </FormControl>

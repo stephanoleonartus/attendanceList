@@ -19,9 +19,12 @@ class RegisterView(generics.CreateAPIView):
         
         # Create token for the new user
         token, created = Token.objects.get_or_create(user=user)
-        print(f"Token created for new user '{user.username}': {token.key}")
         
-        return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+        return Response({
+            'message': 'User created successfully',
+            'token': token.key,
+            'user': UserSerializer(user).data
+        }, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
     def post(self, request):
@@ -36,8 +39,10 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            print(f"Token created for user '{user.username}': {token.key}")
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+            return Response({
+                'token': token.key,
+                'user': UserSerializer(user).data
+            }, status=status.HTTP_200_OK)
         
         return Response({
             'error': 'Invalid credentials'
