@@ -3,14 +3,15 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .serializers import UserSerializer, RegisterSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginResponseSerializer
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -24,6 +25,8 @@ class RegisterView(generics.CreateAPIView):
         return Response({'token': token.key}, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -36,8 +39,8 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            print(f"Token created for user '{user.username}': {token.key}")
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+            serializer = LoginResponseSerializer({'token': token.key, 'user': user})
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response({
             'error': 'Invalid credentials'

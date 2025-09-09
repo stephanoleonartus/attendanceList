@@ -9,25 +9,28 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (token) {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
         try {
           const userResponse = await api.get('/auth/user/');
           setUser(userResponse.data);
+          setToken(storedToken);
         } catch (error) {
           console.error('Failed to fetch user', error);
-          setToken(null);
           localStorage.removeItem('token');
         }
       }
     };
     fetchUser();
-  }, [token]);
+  }, []);
 
   const login = async (username, password) => {
     try {
       const response = await api.post('auth/login/', { username, password });
-      setToken(response.data.token);
-      localStorage.setItem('token', response.data.token);
+      const { token, user } = response.data;
+      setToken(token);
+      setUser(user);
+      localStorage.setItem('token', token);
     } catch (error) {
       console.error('Login failed:', error);
       throw error; // Re-throw so LoginPage can handle it
