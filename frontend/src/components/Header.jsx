@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
 import NotificationBell from './NotificationBell';
 
@@ -6,7 +7,9 @@ export default function Header() {
   return (
     <div className="app-header">
       <div className="header-left">
-        <h1>📋 E-Attendance System</h1>
+        <Link to="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h1>📋 E-Attendance System</h1>
+        </Link>
       </div>
       
       <div className="header-right">

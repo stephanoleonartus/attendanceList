@@ -1,11 +1,12 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Department, Designation, Employee
 from .serializers import DepartmentSerializer, DesignationSerializer, EmployeeSerializer
+from authentication.serializers import RegisterSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from authentication.permissions import IsAdmin, IsHR
+from authentication.permissions import IsAdmin, IsHR, IsAdminOrHR
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
@@ -20,6 +21,11 @@ class DepartmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         return super().handle_exception(exc)
+
+class UserCreateView(generics.CreateAPIView):
+    serializer_class = RegisterSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrHR]
 
 class DesignationViewSet(viewsets.ModelViewSet):
     queryset = Designation.objects.all()
@@ -39,7 +45,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsHR]
+    permission_classes = [IsAuthenticated, IsAdminOrHR]
 
     def get_queryset(self):
         user = self.request.user
