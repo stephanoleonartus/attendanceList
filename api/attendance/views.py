@@ -8,7 +8,7 @@ from location.models import Location
 from location.utils import calculate_distance
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from authentication.permissions import IsAdmin, IsHR
+from authentication.permissions import IsAdmin, IsHR, IsAdminOrHR
 
 class CheckInView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -93,7 +93,7 @@ class AttendanceHistoryView(APIView):
 
 class AllAttendanceHistoryView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdminOrHR]
 
     def get(self, request):
         attendance = Attendance.objects.all().order_by('-date')
